@@ -74,7 +74,7 @@ async def twenty_scores(redis: Redis = Depends(Provide[Container.service])):
 async def twenty_new(agent: str, ID: str, name: str, redis: Redis = Depends(Provide[Container.service])):
     board = Board()
     await redis.set(key=keybuilder(prefix='board', agent=agent, ID=ID), data=board.dump())
-    await update_name(name=name, key=keybuilder(prefix='name', agent=agent, ID=ID)), redis=redis)
+    await update_name(name=name, key=keybuilder(prefix='name', agent=agent, ID=ID), redis=redis))
     await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, ID=ID), redis=redis)
     return board_response(agent=agent, board=board)
 
