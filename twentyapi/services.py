@@ -2,10 +2,8 @@ import dill as pickle
 import aioredis
 
 class Redis:
-    """
-    [aioredis instance]
-    """
     def __init__(self, redis: aioredis.Redis) -> None:
+        """[aioredis instance]"""
         self._redis = redis
 
     async def get(self, key: str, dill: bool = True):

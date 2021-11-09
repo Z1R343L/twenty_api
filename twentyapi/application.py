@@ -36,7 +36,7 @@ def board_response(agent: str, board: Board) -> dict:
         }
     else:
         return {"board": str(board.print_revolt()), "score": int(board.score())}
-    
+
 def keybuilder(prefix: str, agent: str, ID: str) -> str:
     return f"{prefix}_{agent}_{ID}"
 
@@ -71,12 +71,10 @@ async def twenty_scores(redis: Redis = Depends(Provide[Container.service])):
 
 @app.api_route("/twenty/new_game")
 @inject
-async def twenty_new(
-    agent: str, ID: str, name: str, redis: Redis = Depends(Provide[Container.service])
-):
+async def twenty_new(agent: str, ID: str, name: str, redis: Redis = Depends(Provide[Container.service])):
     board = Board()
     await redis.set(key=keybuilder(prefix='board', agent=agent, ID=ID), data=board.dump())
-    await update_name(name=name, key=keybuilder(prefix='name', key=keybuilder(prefix='name', agent=agent, ID=ID)), redis=redis)
+    await update_name(name=name, key=keybuilder(prefix='name', agent=agent, ID=ID)), redis=redis)
     await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, ID=ID), redis=redis)
     return board_response(agent=agent, board=board)
 
