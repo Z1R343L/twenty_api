@@ -14,6 +14,8 @@ from .services import Redis
 
 logging.basicConfig(level=logging.DEBUG)
 
+app = FastAPI()
+
 
 def board_response(agent: str, board: Board) -> dict:
     fn = f"{board.state_string()}.png"
@@ -36,8 +38,8 @@ def board_response(agent: str, board: Board) -> dict:
     else:
         return {"board": str(board.print_revolt()), "score": int(board.score())}
     
-def keybuilder(prefix: str, agent: str, id: str) -> str:
-    return f"{prefix}_{agent}_{id}"
+def keybuilder(prefix: str, agent: str, ID: str) -> str:
+    return f"{prefix}_{agent}_{ID}"
 
 async def update_score(score: int, key: str, redis) -> None:
     exists = await redis.exists(key)
@@ -50,7 +52,7 @@ async def update_score(score: int, key: str, redis) -> None:
         await redis.set(key, {name: score})
         
 async def update_name(name: str, key: str, redis) -> None:
-    exists = await redis.exists(key=f'name_discord_{id}')
+    exists = await redis.exists(key})
     if not exists:
         await redis.set(key=key, data=name)
 
@@ -71,7 +73,7 @@ async def twenty_scores(redis: Redis = Depends(Provide[Container.service])):
 @app.api_route("/twenty/new_game")
 @inject
 async def twenty_new(
-    agent: str, id: str, name: str, redis: Redis = Depends(Provide[Container.service])
+    agent: str, ID: str, name: str, redis: Redis = Depends(Provide[Container.service])
 ):
     board = Board()
     await redis.set(key=keybuilder(prefix='board', agent=agent, id=id), data=board.dump())
@@ -82,17 +84,17 @@ async def twenty_new(
 @app.api_route("/twenty/data")
 @inject
 async def twenty_data(
-    agent: str, id: int, name: str, redis: Redis = Depends(Provide[Container.service])
+    agent: str, ID: int, name: str, redis: Redis = Depends(Provide[Container.service])
 ):
     board = Board()
-    board_key = keybuilder(prefix='board', agent=agent, id=id)
+    board_key = keybuilder(prefix='board', agent=agent, ID=ID)
     can_continue = await redis.exists(key=board_key)
     if can_continue:
         board.load(data=await redis.get(key=board_key))
     else:
         await redis.set(key=board_key, data=board.dump())
-        await update_name(name=name, key=keybuilder(prefix='name', agent=agent, id=id), redis=redis)
-        await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, id=id), redis=redis)
+        await update_name(name=name, key=keybuilder(prefix='name', agent=agent, ID=ID), redis=redis)
+        await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, ID=ID), redis=redis)
     response = board_response(agent=agent, board=board)
     response['can_continue'] = can_continue
     return response
@@ -101,22 +103,22 @@ async def twenty_data(
 @app.api_route("/twenty/move")
 @inject
 async def twenty_move(
-    agent: str, id: str, action: str, redis: Redis = Depends(Provide[Container.service])
+    agent: str, ID: str, action: str, redis: Redis = Depends(Provide[Container.service])
 ):
     board = Board()
-    board_key = keybuilder(prefix='board', agent=agent, id=id)
+    board_key = keybuilder(prefix='board', agent=agent, ID=ID)
     board.load(data=await redis.get(key=board_key))
     board.move(action=action)
     await redis.set(key=board_key, data=board.dump())
-    await update_score(score=board.score(), key=keybuilder(prefix='score', agent=agent, id=id), redis=redis)
+    await update_score(score=board.score(), key=keybuilder(prefix='score', agent=agent, ID=ID), redis=redis)
     return board_response(agent=agent, board=board)
 
 @app.api_route("/twenty/set")
 @inject
 async def twenty_set(
-    agent: str, id: str, data: str, prefix:str, redis: Redis = Depends(Provide[Container.service])
+    agent: str, ID: str, data: str, prefix:str, redis: Redis = Depends(Provide[Container.service])
 ):
-    key = keybuilder(prefix=prefix, agent=agent, id=id)
+    key = keybuilder(prefix=prefix, agent=agent, ID=ID)
     old_exits = await redis.exists(key)
     old_data = await redis.get(key) if old_exits else {}
     await redis.set(key=key, data=data)
