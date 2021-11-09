@@ -4,7 +4,6 @@ import sys
 import logging
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, FastAPI
-from secrets import token_urlsafe
 from os.path import exists
 
 from libtwenty import Board
@@ -29,7 +28,7 @@ def board_response(agent: str, board: Board) -> dict:
             "possible_moves": board.possible_moves(),
             "image_path": fp
         }
-        
+
     elif agent == 'revolt':
         return {
             "score": int(board.score()),
@@ -76,9 +75,9 @@ async def twenty_new(
     agent: str, ID: str, name: str, redis: Redis = Depends(Provide[Container.service])
 ):
     board = Board()
-    await redis.set(key=keybuilder(prefix='board', agent=agent, id=id), data=board.dump())
-    await update_name(name=name, key=keybuilder(prefix='name', agent=agent, id=id), redis=redis)
-    await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, id=id), redis=redis)
+    await redis.set(key=keybuilder(prefix='board', agent=agent, ID=ID), data=board.dump())
+    await update_name(name=name, key=keybuilder(prefix='name', key=keybuilder(prefix='name', agent=agent, ID=ID)), redis=redis)
+    await update_score(score=int(board.score()), key=keybuilder(prefix='score', agent=agent, ID=ID), redis=redis)
     return board_response(agent=agent, board=board)
 
 @app.api_route("/twenty/data")
