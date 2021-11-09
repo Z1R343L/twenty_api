@@ -52,7 +52,7 @@ async def update_score(score: int, key: str, redis) -> None:
         await redis.set(key, {name: score})
         
 async def update_name(name: str, key: str, redis) -> None:
-    exists = await redis.exists(key})
+    exists = await redis.exists(key)
     if not exists:
         await redis.set(key=key, data=name)
 
