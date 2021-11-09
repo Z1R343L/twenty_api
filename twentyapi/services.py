@@ -1,5 +1,5 @@
 import dill as pickle
-from aioredis
+import aioredis
 
 class Redis:
     """
