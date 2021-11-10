@@ -7,4 +7,4 @@
 ![aioredis](https://img.shields.io/badge/aioredis-1.3.1-red?logo=redis&logoColor=white&style=flat-square)
 
 # twenty_api
-fastapi built around libtwenty
+this is a submodule of [project_twenty](https://github.com/Z1R343L/project_twenty)
