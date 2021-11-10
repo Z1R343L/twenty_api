@@ -34,8 +34,6 @@ def board_response(agent: str, board: Board) -> dict:
             "score": int(board.score()),
             "image_path": fp
         }
-    else:
-        return {"board": str(board.print_revolt()), "score": int(board.score())}
 
 def keybuilder(prefix: str, agent: str, ID: str) -> str:
     return f"{prefix}_{agent}_{ID}"

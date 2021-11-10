@@ -1,22 +1,16 @@
-import dill as pickle
 import aioredis
+import pickle
 
 class Redis:
     def __init__(self, redis: aioredis.Redis) -> None:
         """[aioredis instance]"""
         self._redis = redis
 
-    async def get(self, key: str, dill: bool = True):
-        data = await self._redis.get(key)
-        if dill:
-            return pickle.loads(data)
-        else:
-            return data
+    async def get(self, key: str) -> dict:
+        return pickle.loads(await self._redis.get(key))
 
-    async def set(self, key: str, data, dill: bool = True) -> None:
-        if dill:
-            data = pickle.dumps(data)
-        await self._redis.set(key, data)
+    async def set(self, key: str, data: dict) -> None:
+        await self._redis.set(key, pickle.dumps(data))
 
     async def exists(self, key: str):
         return await self._redis.exists(key)
