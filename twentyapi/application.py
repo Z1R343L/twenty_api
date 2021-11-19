@@ -30,7 +30,7 @@ class User(Model):
     board: bytes
 
 app = FastAPI()
-engine = AIOEngine(AsyncIOMotorClient("mongodb://root:root@mongo_db:27017"))
+engine = AIOEngine(AsyncIOMotorClient("mongodb://mongodb:27017"))
 
 async def get_user(user_id: str):
     user = await engine.find_one(User, User.user_id == user_id)
@@ -67,14 +67,14 @@ def board_response(agent: str, board: Board) -> dict:
         im.save(fp, 'PNG')
     if agent == 'discord':
         return {
-            "score": int(board.score()),
-            "possible_moves": board.possible_moves(),
+            "score": int(board.score),
+            "possible_moves": board.possible_moves,
             "image_path": fp
         }
 
     elif agent == 'revolt':
         return {
-            "score": int(board.score()),
+            "score": int(board.score),
             "image_path": fp
         }
 
@@ -86,8 +86,8 @@ async def twenty_new(agent: str, ID: str, name: str, redis: Redis = Depends(Prov
     user.board = srsly.msgpack_dumps(board.dump())
     user.user_name = name
     user.platform = agent
-    if board.score() > user.score:
-        user.score = board.score()
+    if board.score > user.score:
+        user.score = board.score
         user.score_epoch = time()
     await engine.save(user)
     return board_response(agent=agent, board=board)
@@ -118,7 +118,7 @@ async def twenty_move(agent: str, ID: str, action: str, redis: Redis = Depends(P
     board.load(data=srsly.msgpack_loads(user.board))
     board.move(action=action)
     user.board = srsly.msgpack_dumps(board.dump())
-    user.score = board.score()
+    user.score = board.score
     await engine.save(user)
     return board_response(agent=agent, board=board)
 
